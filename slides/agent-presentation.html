@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentic CRM Research System</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Mono:wght@400;700&display=swap');
+        
+        :root {
+            --bg: #0a0e27;
+            --bg-secondary: #151b3d;
+            --text: #e8eaed;
+            --text-secondary: #8b92b9;
+            --accent: #00ff88;
+            --accent-secondary: #ff006e;
+            --code-bg: #1a1f3a;
+            --border: #2a3050;
+        }
+        
+        [data-theme="light"] {
+            --bg: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --text: #1a1a1a;
+            --text-secondary: #666666;
+            --accent: #00a854;
+            --accent-secondary: #d63384;
+            --code-bg: #f0f0f0;
+            --border: #e0e0e0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        /* Matrix rain effect */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            z-index: 0;
+        }
+        
+        .matrix-bg::before {
+            content: "10101010 AGENT ORCHESTRATION 10101010 CRM RESEARCH 01010101 LANGGRAPH 11001100";
+            position: absolute;
+            color: var(--accent);
+            font-size: 10px;
+            animation: matrix 20s linear infinite;
+            white-space: pre;
+            line-height: 1.5;
+        }
+        
+        @keyframes matrix {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: linear-gradient(180deg, var(--bg) 0%, transparent 100%);
+        }
+        
+        /* Dark mode toggle */
+        .theme-toggle {
+            background: var(--code-bg);
+            border: 2px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+        }
+        
+        .theme-toggle:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+        
+        .theme-toggle::before {
+            content: "🌙";
+            font-size: 18px;
+        }
+        
+        [data-theme="light"] .theme-toggle::before {
+            content: "☀️";
+        }
+        
+        /* Slide indicator */
+        .slide-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--code-bg);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            font-size: 14px;
+            z-index: 100;
+        }
+        
+        .slide-indicator::before {
+            content: "// ";
+            color: var(--accent);
+        }
+        
+        /* Main container */
+        .presentation {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Slides */
+        .slide {
+            display: none;
+            animation: slideIn 0.5s ease;
+            max-width: 1200px;
+            width: 90%;
+            padding: 60px;
+        }
+        
+        .slide.active {
+            display: block;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Typography */
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: var(--accent);
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-secondary) 100%);
+            animation: pulse 2s ease infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        h2 {
+            color: var(--accent-secondary);
+            margin: 25px 0 15px;
+            font-size: 1.3em;
+        }
+        
+        h2::before {
+            content: "▶ ";
+            color: var(--accent);
+        }
+        
+        p, li {
+            line-height: 1.8;
+            color: var(--text);
+            margin-bottom: 15px;
+        }
+        
+        strong {
+            color: var(--accent);
+            font-weight: 700;
+        }
+        
+        ul {
+            list-style: none;
+            padding-left: 20px;
+        }
+        
+        li::before {
+            content: "→ ";
+            color: var(--accent);
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        /* Code blocks */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+            position: relative;
+            font-size: 0.9em;
+        }
+        
+        pre::before {
+            content: "SYSTEM_ARCHITECTURE.diagram";
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: var(--code-bg);
+            padding: 0 10px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        
+        code {
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* Navigation */
+        .nav-buttons {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+        
+        .nav-btn {
+            background: var(--code-bg);
+            border: 2px solid var(--border);
+            color: var(--text);
+            padding: 15px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Space Mono', monospace;
+            font-size: 16px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.3);
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .nav-btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+            border-color: var(--border);
+        }
+        
+        .nav-btn::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--accent);
+            opacity: 0.3;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .nav-btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        /* Special formatting for architecture diagram */
+        .architecture-diagram {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 30px;
+            margin: 30px 0;
+            font-size: 0.85em;
+            position: relative;
+            overflow-x: auto;
+        }
+        
+        .architecture-diagram::before {
+            content: "ARCHITECTURE.ascii";
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: var(--code-bg);
+            padding: 0 10px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        
+        /* Terminal prompt effect */
+        .terminal-prompt::before {
+            content: "$ ";
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        /* Glitch effect for title */
+        @keyframes glitch {
+            0%, 100% {
+                text-shadow: 
+                    0.05em 0 0 rgba(255, 0, 110, 0.75),
+                    -0.05em -0.025em 0 rgba(0, 255, 136, 0.75),
+                    0.025em 0.05em 0 rgba(0, 136, 255, 0.75);
+            }
+            15% {
+                text-shadow: 
+                    0.05em 0 0 rgba(255, 0, 110, 0.75),
+                    -0.05em -0.025em 0 rgba(0, 255, 136, 0.75),
+                    0.025em 0.05em 0 rgba(0, 136, 255, 0.75);
+            }
+            16% {
+                text-shadow: 
+                    -0.05em -0.025em 0 rgba(255, 0, 110, 0.75),
+                    0.025em 0.025em 0 rgba(0, 255, 136, 0.75),
+                    -0.05em -0.05em 0 rgba(0, 136, 255, 0.75);
+            }
+        }
+        
+        .glitch {
+            animation: glitch 2s infinite;
+        }
+        
+        /* Progress bar */
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--bg-secondary);
+            z-index: 100;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-secondary) 100%);
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="matrix-bg"></div>
+    
+    <header class="header">
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <span>THEME</span>
+        </button>
+        <div class="slide-indicator">
+            SLIDE <span id="currentSlide">1</span> / <span id="totalSlides">3</span>
+        </div>
+    </header>
+    
+    <div class="presentation">
+        <!-- Slide 1 -->
+        <div class="slide active">
+            <h1 class="glitch">Agentic Orchestration Concept</h1>
+            
+            <p><strong>Agentic orchestration</strong> = a cooperative loop of specialized autonomous agents operating over shared structured state, each:</p>
+            
+            <ul>
+                <li>Observes current state & goals</li>
+                <li>Decides next best contribution (plan, gather, validate, summarize)</li>
+                <li>Emits structured deltas (not just text) enabling downstream reasoning & re-entry</li>
+            </ul>
+            
+            <h2>Key Principles Applied</h2>
+            <ul>
+                <li>Non-linear control flow (dynamic routing via Orchestrator + validation feedback)</li>
+                <li>Parallel evidence gathering (multi-aspect async search)</li>
+                <li>Structured intermediate artifacts (typed Pydantic models) for deterministic scoring</li>
+                <li>Self-check + escalation (Validator triggers targeted re-research)</li>
+            </ul>
+            
+            <p class="terminal-prompt" style="margin-top: 30px; padding: 20px; background: var(--code-bg); border-radius: 8px; border-left: 3px solid var(--accent);">
+                <strong>Outcome:</strong> Reduced hallucination risk, clearer provenance, and adaptive iteration until convergence.
+            </p>
+        </div>
+        
+        <!-- Slide 2 -->
+        <div class="slide">
+            <h1 class="glitch">System Architecture</h1>
+            
+            <div class="architecture-diagram">
+                <pre style="border: none; background: none; padding: 0; margin: 0;">┌──────────────┐        ┌─────────────┐       ┌──────────────┐
+│  <span style="color: var(--accent)">Orchestrator</span>│◄──────►│   <span style="color: var(--accent)">Validator</span> │       │  <span style="color: var(--text-secondary)">Config /</span>    │
+│ <span style="color: var(--text-secondary)">(routing &</span>   │        │ <span style="color: var(--text-secondary)">completeness</span>│       │  <span style="color: var(--text-secondary)">Models</span>      │
+│ <span style="color: var(--text-secondary)">convergence)</span> │        │  <span style="color: var(--text-secondary)">& semantic</span> │       └──────────────┘
+└──────┬───────┘        └──────┬──────┘                    ▲
+       │                       │                           │
+       ▼                       │                           │
+┌──────────────┐   <span style="color: var(--accent-secondary)">async / parallel</span>   ┌──────────────┐     │
+│  <span style="color: var(--accent)">Research</span>    │──────────────────────│  <span style="color: var(--accent-secondary)">Search API</span>  │     │
+│  <span style="color: var(--text-secondary)">(multi-</span>     │  <span style="color: var(--text-secondary)">(per CRM x aspect)</span>  │  <span style="color: var(--text-secondary)">(Tavily)</span>    │     │
+│  <span style="color: var(--text-secondary)">aspect LLM</span>  │                      └──────────────┘     │
+│  <span style="color: var(--text-secondary)">extraction)</span> │           ▲                               │
+└──────┬───────┘           │ <span style="color: var(--text-secondary)">snippets</span>                      │
+       │                   │                               │
+       ▼                   │                               │
+┌──────────────┐           │                               │
+│  <span style="color: var(--accent)">Analysis</span>    │───────────┘                               │
+│ <span style="color: var(--text-secondary)">(scoring,</span>    │  <span style="color: var(--text-secondary)">structured comparison + summary</span>          │
+│ <span style="color: var(--text-secondary)">recs, report)</span>│                                           │
+└──────────────┘                                           │
+        │                                                  │
+        ▼                                                  │
+   <span style="color: var(--accent-secondary)">JSON Report + Table + Logs (output/)</span> ◄──────────────────┘</pre>
+            </div>
+            
+            <h2>Data Flow Highlights</h2>
+            <ul>
+                <li>Shared <code>AgentState</code> holds CRMData objects, validation reports, convergence history</li>
+                <li>Orchestrator uses state-derived heuristics (completeness, convergence window) to choose next agent</li>
+                <li>Research builds evidence → structured <code>CRMData</code> (with confidence heuristic)</li>
+                <li>Analysis converts structured data → normalized scores & recommendations</li>
+                <li>Validator supplies completeness metrics and semantic anomaly signals</li>
+            </ul>
+        </div>
+        
+        <!-- Slide 3 -->
+        <div class="slide">
+            <h1 class="glitch">Trade-offs, Assumptions, Future Work</h1>
+            
+            <h2>Trade-offs & Design Choices</h2>
+            <ul>
+                <li>Simplicity over exhaustive retrieval: single-pass per aspect (retry-enabled) vs full RAG pipeline</li>
+                <li>Confidence heuristic (feature & integration coverage) instead of full citation-based verification</li>
+                <li>JSON structured extraction with fallback fragment salvage to reduce parsing failures</li>
+                <li>LangGraph for explicit state machine (transparent) rather than implicit event bus</li>
+            </ul>
+            
+            <h2>Assumptions</h2>
+            <ul>
+                <li>Tavily results are timely & representative for 2025 CRM landscape</li>
+                <li>Core feature categories (automation/analytics/customization) sufficient for relative scoring</li>
+                <li>Integration count is a reasonable proxy for ecosystem richness (capped normalization)</li>
+            </ul>
+            
+            <div style="margin-top: 40px; padding: 20px; background: var(--code-bg); border-radius: 8px; border-left: 3px solid var(--accent-secondary);">
+                <p class="terminal-prompt">
+                    <strong style="color: var(--accent-secondary)">Next Steps:</strong> Enhanced citation chains, multi-modal evidence, learned routing policies
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="nav-buttons">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← PREV</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">NEXT →</button>
+    </div>
+    
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressBar" style="width: 33.33%"></div>
+    </div>
+    
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        // Update total slides display
+        document.getElementById('totalSlides').textContent = totalSlides;
+        
+        function showSlide(index) {
+            // Hide all slides
+            slides.forEach(slide => slide.classList.remove('active'));
+            
+            // Show current slide
+            slides[index].classList.add('active');
+            
+            // Update slide indicator
+            document.getElementById('currentSlide').textContent = index + 1;
+            
+            // Update progress bar
+            const progress = ((index + 1) / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            // Update button states
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+        
+        function changeSlide(direction) {
+            const newIndex = currentSlideIndex + direction;
+            
+            if (newIndex >= 0 && newIndex < totalSlides) {
+                currentSlideIndex = newIndex;
+                showSlide(currentSlideIndex);
+            }
+        }
+        
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                changeSlide(1);
+            } else if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (e.key === 't' || e.key === 'T') {
+                toggleTheme();
+            }
+        });
+        
+        // Initialize
+        showSlide(0);
+        
+        // Add some nerdy console messages
+        console.log('%c🤖 AGENT SYSTEM INITIALIZED', 'color: #00ff88; font-size: 20px; font-weight: bold;');
+        console.log('%cPress Arrow Keys or Space to navigate', 'color: #8b92b9; font-size: 14px;');
+        console.log('%cPress T to toggle theme', 'color: #8b92b9; font-size: 14px;');
+        console.log('%c[ORCHESTRATOR]: Ready for demonstration', 'color: #ff006e; font-size: 12px;');
+        console.log('%c[RESEARCH]: Standing by...', 'color: #00ff88; font-size: 12px;');
+        console.log('%c[VALIDATOR]: Monitoring state...', 'color: #00ff88; font-size: 12px;');
+        console.log('%c[ANALYSIS]: Awaiting data...', 'color: #00ff88; font-size: 12px;');
+    </script>
+</body>
+</html>
