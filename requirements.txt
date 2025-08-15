@@ -1,0 +1,9 @@
+# Core LLM / agent orchestration stack
+langchain-core
+langchain-openai
+langgraph
+openai>=1.0.0
+tavily-python
+python-dotenv
+pydantic
+pytest
